@@ -5,7 +5,8 @@ import './App.css';
 
 function App() {
 
-   const [data, setData] = useState([])
+   const [data, setData] = useState([]);
+   const [data2, setData2] = useState([])
   const [form , setForm ] = useState({
     car: "",
     color: "",
@@ -26,6 +27,17 @@ useEffect(() => {
     });
 }, []);
 
+useEffect(() => {
+  axios.get( "http://localhost:8080/colors")
+    .then((response) => {
+      const Colors = response.data;
+      setData2(Colors);
+      console.log(Colors, "data2 is received");
+    })
+    .catch((error) => {
+      console.log(error, "error is received");
+    });
+}, []);
 
 
 const handleSubmit = (e) => {
@@ -60,15 +72,12 @@ const handleChange = (e) => {
         <label for="car">Car: </label>
         <input type="text" id="car" placeholder="Enter Car Name" onChange={handleChange} required/>
         <label> Color: </label>  
-       <select id="color" onChange={handleChange}  required={true}>  
-       <option value="" disabled selected hidden>select color</option>
-       <option value="Red"> Red   
-       </option>  
-       <option value="Blue"> Blue   
-      </option>  
-        <option value="Black"> Black  
-        </option>  
-        </select>  
+        <select id="color" onChange={handleChange}  required={true} > 
+        <option defaultValue="select color" disabled selected hidden>select color</option>
+          {data2.map((item) => (
+         <option key={item.id} value={item.color}>{item.color} </option>  
+         ))};
+         </select>  
         <input type="checkbox" name="extras" value="new-wheels" onChange={handleChecked} />
         <input type="checkbox" name="extras" value="new-lights" onChange={handleChecked}  />
     <button type="submit">Submit</button>
@@ -79,9 +88,9 @@ const handleChange = (e) => {
             <h5>Car Type</h5>
             <p>Car: {item.car}</p>
             <p>Color: {item.color}</p>
-            {item.extras.map((item, i) => (  <p key={i}>
+            {item.extras.map((item, i) => (<div key={i}>
               <p>{item}</p>
-            </p>)) }
+            </div>))}
           </div>
         ))}
       </div>
